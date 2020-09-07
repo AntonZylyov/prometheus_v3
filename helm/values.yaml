@@ -1,0 +1,24 @@
+replicaCount: 2
+
+image:
+  repository: antonzylyov/myapp:v3
+
+ingress:
+  host: bit.homework
+  path: /bitapp/zylyov/app
+
+service:
+  type: NodePort
+  port: 9000
+
+metrics:
+  serviceMonitor:
+    enabled: true
+
+mysql:
+  fullnameOverride: mysqldb
+  mysqlUser: zyzyzyz
+  mysqlPassword: mypasswd
+  mysqlDatabase: myapp
+  service:
+    port: 3306
