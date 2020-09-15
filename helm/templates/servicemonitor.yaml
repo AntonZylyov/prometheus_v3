@@ -4,17 +4,16 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "myapp_v3.fullname" . }}
   labels:
-    {{- include "myapp_v3.labels" . | nindent 4 }}
+    app: {{ include "myapp_v3.fullname" . }}-app
 spec:
-  jobLabel: {{ include "myapp_v3.fullname" . }}
   namespaceSelector:
     matchNames:
-      - "{{ $.Release.Namespace }}"
+      - {{ .Release.Namespace }}
   selector:
     matchLabels:
-      {{- include "myapp_v3.selectorLabels" . | nindent 6 }}
+      app: {{ include "myapp_v3.fullname" . }}-app
   endpoints:
     - interval: 15s
-      port: web
+      port: serviceport
       path: /metrics
-  {{- end }}
+{{- end }}

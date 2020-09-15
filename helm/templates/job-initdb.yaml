@@ -15,7 +15,7 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - image: antonzylyov/myapp:v2
+        - image: {{ .Values.image.repository }}
           name: {{ include "myapp_v3.fullname" . }}-initdb-job
           env:
             - name: DATABASE_HOST

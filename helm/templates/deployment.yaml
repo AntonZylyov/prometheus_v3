@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: {{ include "myapp_v3.fullname" . }}
   labels:
-    {{- include "myapp_v3.labels" . | nindent 4 }}
+    app: {{ include "myapp_v3.fullname" . }}-app
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
      matchLabels:
-        {{- include "myapp_v3.selectorLabels" . | nindent 8 }}
+       app: {{ include "myapp_v3.fullname" . }}-app
   template:
      metadata:
         labels:
-          {{- include "myapp_v3.selectorLabels" . | nindent 10 }}
+          app: {{ include "myapp_v3.fullname" . }}-app
      spec:
         volumes:
           - name: {{ include "myapp_v3.fullname" . }}-shared-files

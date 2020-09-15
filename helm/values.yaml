@@ -1,11 +1,11 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: antonzylyov/myapp:v3
 
 ingress:
   host: bit.homework
-  path: /bitapp/zylyov/app
+  path: /bitapp/zylyov
 
 service:
   type: NodePort
@@ -22,3 +22,7 @@ mysql:
   mysqlDatabase: myapp
   service:
     port: 3306
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true

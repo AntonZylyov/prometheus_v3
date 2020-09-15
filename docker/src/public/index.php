@@ -32,26 +32,21 @@ $prometheusRegistry = new \Prometheus\CollectorRegistry(new Prometheus\Storage\R
 
 $app->addRoutingMiddleware();
 
-$endpoint = 'unknown';
-
-$app->get('/', static function (Request $request, Response $response, $args) use (&$endpoint) {
-	$endpoint = 'main_page';
+$app->get('/', static function (Request $request, Response $response, $args) {
 	$result = [
 		'result' => 'WELCOME!'
 	];
 	return \MyApp\Response::createJsonResponse($response, $result);
 });
 
-$app->get('/health', static function (Request $request, Response $response, $args) use (&$endpoint)  {
-	$endpoint = 'health_check';
+$app->get('/health', static function (Request $request, Response $response, $args) {
 	$result = [
 		'status' => 'OK'
 	];
 	return \MyApp\Response::createJsonResponse($response, $result);
 });
 
-$app->get('/user/{id}', static function (Request $request, Response $response, $args) use (&$endpoint)  {
-	$endpoint = 'user_read';
+$app->get('/user/{id}', static function (Request $request, Response $response, $args) {
 	$id = (int)$args['id'];
 	$user = \MyApp\User::getById($id);
 	if ($user)
@@ -74,8 +69,7 @@ $app->get('/user/{id}', static function (Request $request, Response $response, $
 	return \MyApp\Response::createJsonResponse($response, $result);
 });
 
-$app->post('/user', static function (Request $request, Response $response, $args) use (&$endpoint)  {
-	$endpoint = 'user_add';
+$app->post('/user', static function (Request $request, Response $response, $args) {
 	$postData = file_get_contents('php://input');
 	$data = json_decode($postData, true);
 	$data = is_array($data) ? $data : [];
@@ -107,8 +101,7 @@ $app->post('/user', static function (Request $request, Response $response, $args
 	return \MyApp\Response::createJsonResponse($response, $result);
 });
 
-$app->put('/user/{id}', static function (Request $request, Response $response, $args) use (&$endpoint)  {
-	$endpoint = 'user_update';
+$app->put('/user/{id}', static function (Request $request, Response $response, $args) {
 	$postData = file_get_contents('php://input');
 	$data = json_decode($postData, true);
 	$data = is_array($data) ? $data : [];
@@ -151,8 +144,7 @@ $app->put('/user/{id}', static function (Request $request, Response $response, $
 	return \MyApp\Response::createJsonResponse($response, $result);
 });
 
-$app->delete('/user/{id}', static function (Request $request, Response $response, $args) use (&$endpoint)  {
-	$endpoint = 'user_delete';
+$app->delete('/user/{id}', static function (Request $request, Response $response, $args) {
 	$id = (int)$args['id'];
 	$user = \MyApp\User::getById($id);
 	if ($user)
@@ -187,11 +179,11 @@ $errorHandler->registerErrorRenderer('application/json', \MyApp\ErrorHandler::cl
 $app->run();
 
 $prometheusRegistry
-	->getOrRegisterCounter('myapp', 'app_request_count', 'Request counter', ["endpoint"])
-	->inc([$endpoint]);
+	->getOrRegisterCounter('myapp', 'app_request_count', 'Request counter', ['method', 'endpoint', 'http_status'])
+	->inc([$_SERVER["REQUEST_METHOD"], $_SERVER["REQUEST_URI"], http_response_code()]);
 
 $finishTime = microtime(true);
 $prometheusRegistry
-	->getOrRegisterHistogram('myapp', 'app_request_latency_msec', 'Request latency', ["endpoint"],
+	->getOrRegisterHistogram('myapp', 'app_request_latency_msec', 'Request latency', ['method', 'endpoint'],
 		[1, 10, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000])
-	->observe(round(($finishTime - $startTime) * 1000), [$endpoint]);
+	->observe(round(($finishTime - $startTime) * 1000), [$_SERVER["REQUEST_METHOD"], $_SERVER["REQUEST_URI"]]);
