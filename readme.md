@@ -79,3 +79,11 @@ helm install nginx stable/nginx-ingress -f nginx-ingress/nginx-ingress.yaml
 
 json дашборда графаны можно найти в файле [grafana-dashboard/dashboard.json](grafana-dashboard/dashboard.json)
 
+## Инструментировать базу данных с помощью экспортера для prometheus для этой БД
+
+Опытным путем установлено что рутовый пароль в сервисмонитор mysql не пробрасывается,
+поэтому пришлось сделать его пустым
+
+В итоге можем получить например RPS для mysql:
+![Mysql RPS](grafana-dashboard/mysql.png)
+ 

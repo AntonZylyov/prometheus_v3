@@ -20,6 +20,7 @@ mysql:
   mysqlUser: zyzyzyz
   mysqlPassword: mypasswd
   mysqlDatabase: myapp
+  mysqlRootPassword: ""
   service:
     port: 3306
   metrics:
